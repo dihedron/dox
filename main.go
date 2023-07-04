@@ -2,24 +2,25 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"log"
 	"os"
 
+	latex "github.com/dihedron/goldmark-latex"
 	"github.com/jessevdk/go-flags"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/renderer/html"
+	"github.com/yuin/goldmark/renderer"
+	"github.com/yuin/goldmark/util"
 )
 
 func main() {
 
 	var opts struct {
-		Input  string `short:"i" long:"input" description:"The name of the input Markdown file" value-name:"INPUT"`
-		Output string `short:"o" long:"output" description:"The name of the output LaTeX file" value-name:"OUTPUT"`
-		// Theme  string `short:"t" long:"theme" description:"The name of the theme file" value-name:"THEME"`
+		Input    string  `short:"i" long:"input" description:"The name of the input Markdown file" value-name:"INPUT" default:"_test/test0.md"`
+		Output   string  `short:"o" long:"output" description:"The name of the output LaTeX file" value-name:"OUTPUT" default:"_test/test0.tex"`
+		Preamble *string `short:"p" long:"preamble" description:"The path to the preamble file" value-name:"PREAMBLE" default:"_test/preamble.tex"`
 	}
 
 	_, err := flags.Parse(&opts)
@@ -54,20 +55,50 @@ func main() {
 		log.Fatalf("error reading data from input: %v", err)
 	}
 
+	var preamble []byte
+	if opts.Preamble != nil {
+		var p *os.File
+		if p, err = os.Open(*opts.Preamble); err != nil {
+			log.Fatalf("error opening preamble file: %v", err)
+		}
+		defer p.Close()
+
+		preamble, err = io.ReadAll(p)
+		if err != nil {
+			log.Fatalf("error reading preamble file: %v", err)
+		}
+	}
+
+	rd := renderer.NewRenderer(
+		renderer.WithNodeRenderers(
+			util.Prioritized(
+				latex.NewRenderer(
+					latex.Config{
+						NoHeadingNumbering: false,
+						Unsafe:             true,
+						Preamble:           preamble,
+						HeadingLevelOffset: 0,
+					},
+				),
+				1000),
+		),
+	)
+
 	md := goldmark.New(
 		goldmark.WithExtensions(extension.GFM),
+		goldmark.WithRenderer(rd),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
 		),
-		goldmark.WithRendererOptions(
-			html.WithHardWraps(),
-			html.WithXHTML(),
-		),
 	)
+
 	var buf bytes.Buffer
 	if err := md.Convert(data, &buf); err != nil {
 		log.Fatalf("error converting input Markdown: %v", err)
 	}
 
-	fmt.Printf("%s\n", buf.String())
+	_, err = output.Write(buf.Bytes())
+	if err != nil {
+		log.Printf("error writing to output: %v", err)
+	}
 }
