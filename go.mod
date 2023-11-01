@@ -8,6 +8,6 @@ require (
 	github.com/yuin/goldmark v1.6.0
 )
 
-require golang.org/x/sys v0.0.0-20210320140829-1e4c9ba3b0c4 // indirect
+require golang.org/x/sys v0.13.0 // indirect
 
 replace github.com/dihedron/goldmark-latex => /data/workspaces/gomods/goldmark-latex
