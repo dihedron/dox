@@ -4,15 +4,8 @@ binary:
 
 .PHONY: clean
 clean:
-	rm -rf _test/*.log _test/*.pdf _test/test*.tex _test/*.out _test/*.aux _test/_minted-*
+	cd _tests && cd test00 && make clean && cd ../test01 && make clean && cd ../test02 && make clean && cd ../test03 && make clean && cd ../..
 
-.PHONY: tex
-tex: binary
-	dist/dox_linux_amd64_v1/dox -i _test/test0.md -o _test/test0.tex -p _test/preamble.tex
-
-.PHONY: pdf
-pdf:
-	lualatex -shell-escape -output-directory=_test _test/test0.tex
 
 # .PHONY: test1
 # test1: binary

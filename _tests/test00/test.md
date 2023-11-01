@@ -4,7 +4,9 @@ Unfortunately, Markdown does not support underline.
 
 This is a picture of Homer Simpson.
 
-![homer](homer.jpg?width=0.75&label=fig:homer&caption=A%20sleeping%20Homer%20Simpson "Homer Simpson")
+![homer](images/homer.jpg?width=0.75&label=fig:homer&caption=A%20sleeping%20Homer%20Simpson "Homer Simpson")
+
+You can even set a reference to your code via an internal ref (TODO).
 
 Now let's show a piece of golang code:
 
