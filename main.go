@@ -73,14 +73,14 @@ func main() {
 		renderer.WithNodeRenderers(
 			util.Prioritized(
 				latex.NewRenderer(
-					latex.Config{
-						NoHeadingNumbering: false,
-						Unsafe:             true,
-						Preamble:           preamble,
-						HeadingLevelOffset: 0,
-					},
+					latex.WithNoHeadingNumbering(false),
+					latex.WithRenderUnsafeElements(true),
+					latex.WithPreamble(preamble),
+					latex.WithHeadingLevelOffset(0),
+					latex.WithMakeTitle(true),
 				),
-				1000),
+				1000,
+			),
 		),
 	)
 

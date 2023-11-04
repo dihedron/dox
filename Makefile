@@ -3,8 +3,13 @@ binary:
 	goreleaser build --single-target --snapshot --clean
 
 .PHONY: clean
-clean:
-	cd _tests && cd test00 && make clean && cd ../test01 && make clean && cd ../test02 && make clean && cd ../test03 && make clean && cd ../..
+clean: ./_tests/*/
+	@for test in $^; do  \
+		echo "this is my path: [$${test}]" && \
+		cd $${test} && \
+		make clean && \
+		cd ../..; \
+	done
 
 
 # .PHONY: test1
